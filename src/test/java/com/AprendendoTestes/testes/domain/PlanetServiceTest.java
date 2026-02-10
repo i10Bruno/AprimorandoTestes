@@ -1,5 +1,7 @@
 package com.AprendendoTestes.testes.domain;
 
+import org.h2.command.dml.MergeUsing;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,7 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static com.AprendendoTestes.testes.common.PlanetConstants.PLANET;
+import static com.AprendendoTestes.testes.common.PlanetConstants.INVALID_PLANET;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 //montar o contexto da aplicação escanenando beans que estão sendo usado na classe
@@ -46,5 +50,26 @@ class PlanetServiceTest {
         assertThat(sut).isEqualTo(PLANET);
 
     }
+
+    // na validação de dados quando o usuario coloca os dados errados os ifs ficando no controller e no repository
+    //por isso os ifs não sao validados no serviceTest , vamos validar o comportamento do repositorio
+    //quando é passado dados errados
+
+
+    //faltou quando os dados ja existem no banco e porque não fazemos a validação no banco pq é pouco performatico
+    //Vantagem: Você só vai ao banco uma vez (para tentar salvar). Se falhar, falhou. Você economizou o SELECT prévio.
+    //nos so fazemos so uma consulta de salvar se esse dado tiver ja no banco ele ja lança um exception e n salva
+    //ao inves de fazer duas consultas a de find e dps a de save nos so fazemos a de save
+    //se o dado tiver la vai retornar um erro
+
+
+    @Test
+    public void createPlanet_whithInvalidDate_ThrowsException(){
+        when(repository.save(INVALID_PLANET)).thenThrow(RuntimeException.class);
+
+      assertThatThrownBy(()->service.create(INVALID_PLANET)).isInstanceOf(RuntimeException.class);
+
+    }
+
 
 }
