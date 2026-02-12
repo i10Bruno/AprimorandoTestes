@@ -11,8 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.util.Optional;
+
 import static com.AprendendoTestes.testes.common.PlanetConstants.PLANET;
 import static com.AprendendoTestes.testes.common.PlanetConstants.INVALID_PLANET;
+import  static com.AprendendoTestes.testes.common.PlanetConstants.PLANET_id;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
@@ -68,6 +71,24 @@ class PlanetServiceTest {
         when(repository.save(INVALID_PLANET)).thenThrow(RuntimeException.class);
 
       assertThatThrownBy(()->service.create(INVALID_PLANET)).isInstanceOf(RuntimeException.class);
+
+    }
+
+
+
+    @Test
+    public void findByIdPlanet_whenIdNotExists_ThrowsException(){
+        when(repository.findById(null)).thenThrow(RuntimeException.class);
+
+        assertThatThrownBy(()->service.findById(null)).isInstanceOf(RuntimeException.class);
+
+    }
+    @Test
+    public void findByIdPlanet_whenIdExists_ReturnPlanet(){
+        when(repository.findById(PLANET_id.getId())).thenReturn(Optional.of(PLANET_id));
+        Optional<Planet> sut= service.findById(PLANET_id.getId());
+        assertThat(sut).isEqualTo(PLANET_id);
+        //deu erro pq um retorna optional que fica dentro de um array e outro retorna o obj
 
     }
 

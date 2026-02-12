@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Getter
 @Setter
@@ -20,6 +22,11 @@ public class PlanetService {
     return repository.save(planet);
 
     };
+
+    public Optional<Planet> findById(Long id){
+
+        return repository.findById(id);
+    }
 
 
 }

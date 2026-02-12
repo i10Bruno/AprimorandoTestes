@@ -23,6 +23,12 @@ public class Planet {
         this.climate=climate;
         this.terrain=terrain;
     }
+    public Planet(Long id,String name,String climate,String terrain){
+        this.id=id;
+        this.name=name;
+        this.climate=climate;
+        this.terrain=terrain;
+    }
 
     @Override
     public boolean equals(Object obj){
