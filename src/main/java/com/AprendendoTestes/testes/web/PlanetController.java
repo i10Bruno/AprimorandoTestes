@@ -5,10 +5,7 @@ import com.AprendendoTestes.testes.domain.PlanetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/planets")
@@ -23,5 +20,13 @@ public ResponseEntity<Planet> create(@RequestBody Planet planet){
     Planet planet1 = service.create(planet);
     return ResponseEntity.status(HttpStatus.CREATED).body(planet1);
 };
+@GetMapping
+    public ResponseEntity<Planet>findById(Long id){
+        return service.findById(id).map(planet -> ResponseEntity.ok(planet)).orElseGet(()->ResponseEntity.notFound().build());
+    };
+    @GetMapping("name/{name}")
+    public ResponseEntity<Planet>findByName(@PathVariable String name){
+        return service.findByname(name).map(planet -> ResponseEntity.ok(planet)).orElseGet(()->ResponseEntity.notFound().build());
+    };
 
 }

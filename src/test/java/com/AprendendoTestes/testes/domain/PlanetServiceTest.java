@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static com.AprendendoTestes.testes.common.PlanetConstants.PLANET;
@@ -77,19 +78,34 @@ class PlanetServiceTest {
 
 
     @Test
-    public void findByIdPlanet_whenIdNotExists_ThrowsException(){
-        when(repository.findById(null)).thenThrow(RuntimeException.class);
-
-        assertThatThrownBy(()->service.findById(null)).isInstanceOf(RuntimeException.class);
-
+    public void findByIdPlanet_whenUnexistingId_ReturnsEmpty(){
+        when(repository.findById(null)).thenReturn(Optional.empty());
+        Optional<Planet> sut= service.findById(null);
+        assertThat(sut).isEmpty();
     }
+
+
     @Test
     public void findByIdPlanet_whenIdExists_ReturnPlanet(){
         when(repository.findById(PLANET_id.getId())).thenReturn(Optional.of(PLANET_id));
         Optional<Planet> sut= service.findById(PLANET_id.getId());
-        assertThat(sut).isEqualTo(PLANET_id);
+        assertThat(sut).isNotEmpty();
+        assertThat(sut.get()).isEqualTo(PLANET_id);
         //deu erro pq um retorna optional que fica dentro de um array e outro retorna o obj
 
+    }
+    @Test
+    public void findByNamePlanet_whenUnexistingName_ReturnsEmpty(){
+        when(repository.findByName("")).thenReturn(Optional.empty());
+        Optional<Planet> sut= service.findByname("");
+        assertThat(sut).isEmpty();
+    }
+    @Test
+    public void findByNamePlanet_whenexistingName_ReturnsPlanet(){
+        when(repository.findByName(PLANET.getName())).thenReturn(Optional.of(PLANET));
+        Optional<Planet> sut= service.findByname(PLANET.getName());
+        assertThat(sut).isNotEmpty();
+        assertThat(sut.get()).isEqualTo(PLANET);
     }
 
 

@@ -29,4 +29,7 @@ public class PlanetService {
     }
 
 
+    public Optional<Planet> findByname(String name) {
+        return repository.findByName(name);
+    }
 }
