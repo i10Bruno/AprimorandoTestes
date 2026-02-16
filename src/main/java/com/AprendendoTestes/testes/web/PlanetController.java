@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/planets")
 
@@ -24,9 +26,21 @@ public ResponseEntity<Planet> create(@RequestBody Planet planet){
     public ResponseEntity<Planet>findById(Long id){
         return service.findById(id).map(planet -> ResponseEntity.ok(planet)).orElseGet(()->ResponseEntity.notFound().build());
     };
-    @GetMapping("name/{name}")
+@GetMapping("name/{name}")
     public ResponseEntity<Planet>findByName(@PathVariable String name){
         return service.findByname(name).map(planet -> ResponseEntity.ok(planet)).orElseGet(()->ResponseEntity.notFound().build());
     };
+
+
+@GetMapping
+
+    public ResponseEntity<List<Planet>>List(@RequestParam(required = false)String terrain,@RequestParam(required = false)String climate){
+
+    List<Planet> planetList =service.list(terrain,climate);
+    return ResponseEntity.ok(planetList);
+
+}
+
+
 
 }

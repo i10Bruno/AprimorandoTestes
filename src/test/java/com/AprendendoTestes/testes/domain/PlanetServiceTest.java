@@ -1,22 +1,19 @@
 package com.AprendendoTestes.testes.domain;
 
-import org.h2.command.dml.MergeUsing;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.data.domain.Example;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-import static com.AprendendoTestes.testes.common.PlanetConstants.PLANET;
-import static com.AprendendoTestes.testes.common.PlanetConstants.INVALID_PLANET;
-import  static com.AprendendoTestes.testes.common.PlanetConstants.PLANET_id;
+import static com.AprendendoTestes.testes.common.PlanetConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
@@ -25,7 +22,6 @@ import static org.mockito.Mockito.when;
 //@SpringBootTest(classes=PlanetService.class)
 
 //sempre que usamos  teste de unidade pura para uma melhor otimização não usamos o spring
-
 
 
 // na escala usamos o @extendwith
@@ -42,7 +38,7 @@ class PlanetServiceTest {
     //operação_estado_retorno
 
     @Test
-    public void createPlanet_whithValidDate_returnsPlanet(){
+    public void createPlanet_whithValidDate_returnsPlanet() {
         //mockando apenas o comportamento da dependencia
         //como o mockito n faz o save ele so simula a a chamada precisando fazer o retorno dessa chamada quando o service.create é acionado
         when(repository.save(PLANET)).thenReturn(PLANET);
@@ -68,44 +64,67 @@ class PlanetServiceTest {
 
 
     @Test
-    public void createPlanet_whithInvalidDate_ThrowsException(){
+    public void createPlanet_whithInvalidDate_ThrowsException() {
         when(repository.save(INVALID_PLANET)).thenThrow(RuntimeException.class);
 
-      assertThatThrownBy(()->service.create(INVALID_PLANET)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> service.create(INVALID_PLANET)).isInstanceOf(RuntimeException.class);
 
     }
 
 
-
     @Test
-    public void findByIdPlanet_whenUnexistingId_ReturnsEmpty(){
+    public void findByIdPlanet_whenUnexistingId_ReturnsEmpty() {
         when(repository.findById(null)).thenReturn(Optional.empty());
-        Optional<Planet> sut= service.findById(null);
+        Optional<Planet> sut = service.findById(null);
         assertThat(sut).isEmpty();
     }
 
 
     @Test
-    public void findByIdPlanet_whenIdExists_ReturnPlanet(){
+    public void findByIdPlanet_whenIdExists_ReturnPlanet() {
         when(repository.findById(PLANET_id.getId())).thenReturn(Optional.of(PLANET_id));
-        Optional<Planet> sut= service.findById(PLANET_id.getId());
+        Optional<Planet> sut = service.findById(PLANET_id.getId());
         assertThat(sut).isNotEmpty();
         assertThat(sut.get()).isEqualTo(PLANET_id);
         //deu erro pq um retorna optional que fica dentro de um array e outro retorna o obj
 
     }
+
     @Test
-    public void findByNamePlanet_whenUnexistingName_ReturnsEmpty(){
+    public void findByNamePlanet_whenUnexistingName_ReturnsEmpty() {
         when(repository.findByName("")).thenReturn(Optional.empty());
-        Optional<Planet> sut= service.findByname("");
+        Optional<Planet> sut = service.findByname("");
         assertThat(sut).isEmpty();
     }
+
     @Test
-    public void findByNamePlanet_whenexistingName_ReturnsPlanet(){
+    public void findByNamePlanet_whenexistingName_ReturnsPlanet() {
         when(repository.findByName(PLANET.getName())).thenReturn(Optional.of(PLANET));
-        Optional<Planet> sut= service.findByname(PLANET.getName());
+        Optional<Planet> sut = service.findByname(PLANET.getName());
         assertThat(sut).isNotEmpty();
         assertThat(sut.get()).isEqualTo(PLANET);
+    }
+
+    @Test
+    public void ListPlanet_returnsNoPlanet() {
+        when(repository.findAll(ArgumentMatchers.<Example<Planet>>any())).thenReturn(Collections.emptyList());
+        List<Planet> sut = service.list(PLANET.getTerrain(), PLANET.getClimate());
+        assertThat(sut).isEmpty();
+    }
+
+    @Test
+    public void ListPlanet_returnsPlanetList() {
+        List<Planet> planets = new ArrayList<>() {
+            {
+                add(PLANET);
+            }
+        };
+        Example<Planet> query = QueryBuilder.makeQuery(new Planet(PLANET.getClimate(), PLANET.getTerrain()));
+        when(repository.findAll(query)).thenReturn((planets));
+        List<Planet> sut = service.list(PLANET.getTerrain(), PLANET.getClimate());
+        assertThat(sut).isNotEmpty();
+        assertThat(sut.get(0)).isEqualTo(PLANET);
+
     }
 
 
