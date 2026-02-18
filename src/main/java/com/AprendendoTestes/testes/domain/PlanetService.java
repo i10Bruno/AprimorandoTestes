@@ -42,4 +42,9 @@ public class PlanetService {
 
         return repository.findAll(query);
     }
+
+    public void deleteByid(Long id){
+        repository.findById(id);
+    }
+
 }

@@ -32,14 +32,17 @@ public ResponseEntity<Planet> create(@RequestBody Planet planet){
     };
 
 
-@GetMapping
-
+    @GetMapping
     public ResponseEntity<List<Planet>>List(@RequestParam(required = false)String terrain,@RequestParam(required = false)String climate){
-
     List<Planet> planetList =service.list(terrain,climate);
     return ResponseEntity.ok(planetList);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void>delete(@PathVariable("id") Long id){
+        service.deleteByid(id);
+        return ResponseEntity.noContent().build();
 
-}
+    }
 
 
 

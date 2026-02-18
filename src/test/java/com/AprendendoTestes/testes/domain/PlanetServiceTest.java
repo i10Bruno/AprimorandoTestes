@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.AprendendoTestes.testes.common.PlanetConstants.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 //montar o contexto da aplicação escanenando beans que estão sendo usado na classe
@@ -125,6 +125,16 @@ class PlanetServiceTest {
         assertThat(sut).isNotEmpty();
         assertThat(sut.get(0)).isEqualTo(PLANET);
 
+    }
+
+    @Test
+    public void RemovePlanet_withExistingId_doesNotThrowAnyException(){
+    assertThatCode(()->service.deleteByid(1l)).doesNotThrowAnyException();
+    }
+    @Test
+    public void RemovePlanet_withUnexistingId_ThrowException(){
+        doThrow(new RuntimeException()).when(repository).deleteById(99l);
+        assertThatThrownBy(()->service.deleteByid(99l)).isInstanceOf(RuntimeException.class);
     }
 
 
